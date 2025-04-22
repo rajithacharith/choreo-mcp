@@ -52,6 +52,11 @@ func main() {
 	)
 	s.AddTool(getComponentsTool, getComponents)
 
+	getEnvironmentsTool := mcp.NewTool("get_environments",
+		mcp.WithDescription("Get environments from Choreo organization"),
+	)
+	s.AddTool(getEnvironmentsTool, getEnvironments)
+
 	// Start the stdio server
 	if err := server.ServeStdio(s); err != nil {
 		fmt.Printf("Server error: %v\n", err)
@@ -61,7 +66,7 @@ func main() {
 func getProjects(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	projects, err := choreoservice.GetProjects(orgID, token)
 	if err != nil {
-		return nil, fmt.Errorf("ORG ID %s, TOKEN %s, failed to get projects: %w", orgID, token, err)
+		return nil, fmt.Errorf("failed to get projects: %w", orgID, token, err)
 	}
 
 	return mcp.NewToolResultText(fmt.Sprintf("%v", projects)), nil
@@ -75,8 +80,17 @@ func getComponents(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallT
 
 	components, err := choreoservice.GetComponents(orgHandler, projectID, token)
 	if err != nil {
-		return nil, fmt.Errorf("ORG ID %s, TOKEN %s, failed to get components: %w", orgID, token, err)
+		return nil, fmt.Errorf("failed to get components: %w", orgID, token, err)
 	}
 
 	return mcp.NewToolResultText(fmt.Sprintf("%v", components)), nil
+}
+
+func getEnvironments(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	environments, err := choreoservice.GetEnvironments(orgID, token)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get environments: %w", orgID, token, err)
+	}
+
+	return mcp.NewToolResultText(fmt.Sprintf("%v", environments)), nil
 }

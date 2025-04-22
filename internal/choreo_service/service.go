@@ -160,3 +160,58 @@ func GetComponents(orgHandler string, projectID string, token string) ([]Compone
 
 	return componentsResponse.Data.Components, nil
 }
+
+type Environment struct {
+	ID                   string `json:"id"`
+	CreatedAt            string `json:"created_at"`
+	OrganizationID       int    `json:"organization_id"`
+	OrganizationUUID     string `json:"organization_uuid"`
+	EnvName              string `json:"env_name"`
+	Region               string `json:"region"`
+	ChoreoEnv            string `json:"choreo_env"`
+	ClusterID            string `json:"cluster_id"`
+	DockerCredentialUUID string `json:"docker_credential_uuid"`
+	ExternalApimEnvName  string `json:"external_apim_env_name"`
+	InternalApimEnvName  string `json:"internal_apim_env_name"`
+	SandboxApimEnvName   string `json:"sandbox_apim_env_name"`
+	Critical             bool   `json:"critical"`
+	DnsPrefix            string `json:"dns_prefix"`
+	PdpWebAppDnsPrefix   string `json:"pdp_web_app_dns_prefix"`
+	DeletionStatus       string `json:"deletion_status"`
+	Sandbox              bool   `json:"sandbox"`
+}
+
+type EnvironmentsResponse struct {
+	Data []Environment `json:"data"`
+}
+
+func GetEnvironments(orgID string, token string) ([]Environment, error) {
+	url := fmt.Sprintf("https://apis.preview-dv.choreo.dev/devops/1.0.0/api/v1/organizations/%s/environment-templates", orgID)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	var environmentsResponse EnvironmentsResponse
+	if err := json.NewDecoder(resp.Body).Decode(&environmentsResponse); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
+
+	return environmentsResponse.Data, nil
+}
