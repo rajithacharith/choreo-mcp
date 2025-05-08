@@ -35,7 +35,7 @@ type ProjectsResponse struct {
 }
 
 func GetProjects(orgID string, token string) ([]Project, error) {
-	url := "https://apis.preview-dv.choreo.dev/projects/1.0.0/graphql"
+	url := "https://apis.choreo.dev/projects/1.0.0/graphql"
 	query := fmt.Sprintf(`{"query":"query{projects(orgId: %s){id, orgId, name, version, createdDate, handler, region, description, defaultDeploymentPipelineId, deploymentPipelineIds, type, gitProvider, gitOrganization, repository, branch, secretRef, updatedAt}}"}`, orgID)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(query)))
@@ -82,7 +82,7 @@ type Organization struct {
 }
 
 func GetOrganizations(token string) ([]Organization, error) {
-	url := "https://apis.preview-dv.choreo.dev/orgs/1.0.0/orgs"
+	url := "https://apis.choreo.dev/orgs/1.0.0/orgs"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -129,7 +129,7 @@ type ComponentsResponse struct {
 }
 
 func GetComponents(orgHandler string, projectID string, token string) ([]Component, error) {
-	url := "https://apis.preview-dv.choreo.dev/projects/1.0.0/graphql"
+	url := "https://apis.choreo.dev/projects/1.0.0/graphql"
 	query := fmt.Sprintf(`{"query":"query{ components(orgHandler: \"%s\", projectId: \"%s\"){\n          projectId, \n          id,\n          name,\n          status,\n          handler, \n          displayName,\n          displayType,\n        } \n      }"}`, orgHandler, projectID)
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(query)))
@@ -186,7 +186,7 @@ type EnvironmentsResponse struct {
 }
 
 func GetEnvironments(orgID string, token string) ([]Environment, error) {
-	url := fmt.Sprintf("https://apis.preview-dv.choreo.dev/devops/1.0.0/api/v1/organizations/%s/environment-templates", orgID)
+	url := fmt.Sprintf("https://apis.choreo.dev/devops/1.0.0/api/v1/organizations/%s/environment-templates", orgID)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
